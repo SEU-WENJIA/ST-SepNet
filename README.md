@@ -7,7 +7,7 @@ Welcome to ST-SepNet's GitHub repository! This project aims to explore the appli
 
 
 ### Data 
-The data can be obtained and downloaded from [Google Drive](https://drive.google.com/drive/folders/1uhQqAdrIplhhKCHn0McnB-trve6_rATD?usp=drive_link)), and makedir path ```dataset/``` and put dataset in ```dataset/```.
+The data can be obtained and downloaded from ([Google Drive](https://drive.google.com/drive/folders/1uhQqAdrIplhhKCHn0McnB-trve6_rATD?usp=drive_link)), and makedir path ```dataset/``` and put dataset in ```dataset/```.
 
 
 
