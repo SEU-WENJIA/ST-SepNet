@@ -69,7 +69,7 @@ sh ./scripts/BIKE/LLAMA8B_Bike.sh
 sh ./scripts/BIKE/Deepseek_Bike.sh
 ```
 
-### 2.2 Training ST-SepNet-(w/o)
+### 2.3 Training ST-SepNet-without LLMs (w/o) 
 Run scripts for demonstration purpose under the folder `./scripts`. For example, to evaluate on BIKE datasets by:
 
 ```shell
@@ -96,9 +96,6 @@ accelerate launch   --mixed_precision bf16  --dynamo_backend 'no' --num_processe
   --label_len 48 \
   --pred_len 48 \
   --factor 3 \
-  --enc_in 7 \
-  --dec_in 7 \
-  --c_out 7 \
   --des 'Exp' \
   --itr 1 \
   --d_model $d_model \
@@ -122,7 +119,7 @@ accelerate launch   --mixed_precision bf16  --dynamo_backend 'no' --num_processe
 
 
 
-
+## 3.Further Reading 
 ### Our research baselines models refer to the following works and their repository code.
 
 
