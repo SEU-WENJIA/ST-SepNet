@@ -9,32 +9,49 @@ Spatio-temporal prediction is a pivotal task with broad applications in traffic 
 <img src="img/model.png" height = "480" alt="" align=center />
 </p>
 
-### 1. Environment Update: 
+## 1. Preparation
+### 1.1 Environment 
 
-The lightweight training requires torch 2.0+, Install torch and necessary dependencies, update corresponding libraries: 
+The lightweight training requires torch 2.0+, to install all dependencies , update corresponding libraries: 
 ```shell
 pip install -r requirements.txt
 ```
 
-### Data 
+### 1.2 Data 
 The data can be obtained and downloaded from ([Google Drive](https://drive.google.com/drive/folders/1uhQqAdrIplhhKCHn0McnB-trve6_rATD?usp=drive_link)), and makedir path ```dataset/``` and put dataset in ```dataset/```.
 
 
 
 
-### Large Language Models
+### 1.3 Large Language Models
 
 The pretrained models can be downloaded from the links in the Table as below,  and makedir path ```huggingface/``` and put pretrained models in ```huggingface/```. For example, ```huggingface/BERT```
 
-| Model                  | Parameters | LLM Dimension |
+| Model 🤗                 | Parameters | LLM Dimension | 
 |------------------------|------------|---------------|
-| [BERT](https://huggingface.co/google-bert/bert-base-uncased)                   | 110M       | 768           |
-| [GPT-2](https://huggingface.co/openai-community/gpt2)               | 124M       | 768           |
-| [GPT-3](https://huggingface.co/TurkuNLP/gpt3-finnish-large)                | 7580M      | 4096          |
-| [LLAMA-1B](https://huggingface.co/meta-llama/Llama-3.2-1B)               | 1230M      | 2048          |
-| [LLAMA-7B](https://huggingface.co/huggyllama/llama-7b)               | 6740M      | 4096          |
-| [LLAMA-8B](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)               | 8000M      | 4096          |
+| [BERT](https://huggingface.co/google-bert/bert-base-uncased)                   | 110M       | 768           |  
+| [GPT-2](https://huggingface.co/openai-community/gpt2)               | 124M       | 768           | 
+| [GPT-3](https://huggingface.co/TurkuNLP/gpt3-finnish-large)                | 7580M      | 4096          | 
+| [LLAMA-1B](https://huggingface.co/meta-llama/Llama-3.2-1B)               | 1230M      | 2048          |  
+| [LLAMA-7B](https://huggingface.co/huggyllama/llama-7b)               | 6740M      | 4096          | 
+| [LLAMA-8B](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)               | 8000M      | 4096          |   
 | [DeepSeek-Qwen1.5B](https://huggingface.co/Qwen/Qwen2.5-Math-1.5B)      | 1500M      | 1536          |
+
+
+
+## 2. Getting Start
+### 2.1 Training ST-SepNet
+1. Download datasets and place them under `./dataset`.
+2. Download pretrained models and place them under `./huggingface`.
+3. Run scripts for demonstration purpose under the folder `./scripts`. To evaluate on BIKE datasets by:
+
+```shell
+
+pip install -r requirements.txt
+
+```
+
+
 
 
 ### Our research baselines models refer to the following works and their repository code.
