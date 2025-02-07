@@ -9,10 +9,12 @@ Spatio-temporal prediction is a pivotal task with broad applications in traffic 
 <img src="img/model.png" height = "480" alt="" align=center />
 </p>
 
-#### 1. Environment Update: 
+### 1. Environment Update: 
 
 The lightweight training requires torch 2.0+, Install torch and necessary dependencies, update corresponding libraries: 
-
+```shell
+pip install -r requirements.txt
+```
 
 ### Data 
 The data can be obtained and downloaded from ([Google Drive](https://drive.google.com/drive/folders/1uhQqAdrIplhhKCHn0McnB-trve6_rATD?usp=drive_link)), and makedir path ```dataset/``` and put dataset in ```dataset/```.
