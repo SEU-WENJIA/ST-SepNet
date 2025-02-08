@@ -155,7 +155,7 @@ sh ./scripts/PEMS/BERT_PEMS03_flexible_order.sh
 
 
 <p align="center">
-<img src="img/tables01.png" height = "300" alt="" align=center />
+<img src="img/tables01.png" height = "260" alt="" align=center />
 </p>
 
 
