@@ -35,7 +35,7 @@ The pretrained models can be downloaded from the links in the Table as below,  a
 | [LLAMA-1B](https://huggingface.co/meta-llama/Llama-3.2-1B)               | 1230M      | 2048          |  
 | [LLAMA-7B](https://huggingface.co/huggyllama/llama-7b)               | 6740M      | 4096          | 
 | [LLAMA-8B](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)               | 8000M      | 4096          |   
-| [DeepSeek-Qwen1.5B](https://huggingface.co/Qwen/Qwen2.5-Math-1.5B)      | 1500M      | 1536          |
+| [DeepSeek-Qwen1.5B](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B)      | 1500M      | 1536          |
 
 
 
