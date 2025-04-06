@@ -188,16 +188,8 @@ sh ./scripts/PEMS/BERT_PEMS03_flexible_order.sh
 ## 4. Performance and Visualization
 
 <p align="center">
-<img src="img/table01.png" height = "480" alt="" align=center />
+<img src="img/figure02.png" height = "480" alt="" align=center />
 </p>
-
-<div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
-  <img src="img/table02.png" height="500" alt="" style="align-self: flex-start;" />
-  <div style="display: flex; flex-direction: column; gap: 10px;">
-    <img src="img/figure03.png" height="200" alt="" />
-    <img src="img/figure04.png" height="200" alt="" />
-  </div>
-</div>
 
 <p align="center">
 <img src="img/tables01.png" height = "260" alt="" align=center />
