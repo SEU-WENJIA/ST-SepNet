@@ -202,7 +202,7 @@ sh ./scripts/PEMS/BERT_PEMS03_flexible_order.sh
 
 
 <p align="center">
-<img src="img/tableb5.png" height = "240" alt="" align=center />
+<img src="img/tableb5.png" height = "200" alt="" align=center />
 </p>
 
 
