@@ -7,6 +7,7 @@ from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
 
+
 class graph_constructor(nn.Module):
     def __init__(self, nnodes, k, dim, device, alpha=3, static_feat=None):
         super(graph_constructor, self).__init__()
@@ -180,6 +181,80 @@ class graph_directed(nn.Module):
 
 
 
+
+
+class directedhypergraph_constructor:
+    def __init__(self, num_hyperedges, nnodes, metric='knn', max_nodes_per_hyperedge=None, similarity_threshold=0.5, num_neighbors=3):
+        self.num_hyperedges = num_hyperedges
+        self.nnodes = nnodes
+        self.metric = metric
+        self.max_nodes_per_hyperedge = max_nodes_per_hyperedge
+        self.similarity_threshold = similarity_threshold
+        self.num_neighbors = num_neighbors
+
+    def build_hypergraph(self, transformed_features, device):
+        if self.metric == 'cluster':
+            kmeans = KMeans(n_clusters=self.num_hyperedges).fit(transformed_features.cpu().detach().numpy())
+            cluster_labels = torch.tensor(kmeans.labels_, dtype=torch.long, device=device)
+
+            # Initialize the incidence matrix
+            H = torch.zeros((self.nnodes, self.num_hyperedges), device=device)
+
+            if self.max_nodes_per_hyperedge is not None:
+                for i in range(self.nnodes):
+                    hyperedge_idx = cluster_labels[i]
+                    if torch.sum(H[:, hyperedge_idx].abs()) < self.max_nodes_per_hyperedge:
+                        H[i, hyperedge_idx] = 1  # Assign as head node
+                    else:
+                        H[i, hyperedge_idx] = -1  # Assign as tail node
+            else:
+                for i in range(self.nnodes):
+                    hyperedge_idx = cluster_labels[i]
+                    H[i, hyperedge_idx] = 1  # Assign as head node
+
+        elif self.metric == 'cosine':
+            sim_matrix = F.cosine_similarity(transformed_features.unsqueeze(1), transformed_features.unsqueeze(0), dim=-1)
+            sim_matrix[sim_matrix < self.similarity_threshold] = 0
+            _, topk_indices = torch.topk(sim_matrix, self.num_hyperedges, dim=1)
+
+            H = torch.zeros((self.nnodes, self.num_hyperedges), device=device)
+
+            for i, indices in enumerate(topk_indices):
+                # Assign higher similarity nodes as head nodes (1) and lower as tail nodes (-1)
+                # This is a simplistic approach; adjust based on specific criteria
+                H[indices[:self.num_hyperedges//2], i] = 1
+                if len(indices) > self.num_hyperedges//2:
+                    H[indices[self.num_hyperedges//2:], i] = -1
+
+        elif self.metric == 'knn':
+            num_neighbors = self.num_neighbors
+            transformed_features = transformed_features.to(torch.float32)
+            nn = NearestNeighbors(n_neighbors=num_neighbors, metric='euclidean').fit(transformed_features.cpu().detach().numpy())
+            distances, indices = nn.kneighbors(transformed_features.cpu().detach().numpy())
+
+            hyperedges = set()
+            for i in range(self.nnodes):
+                hyperedge = frozenset(indices[i])
+                hyperedges.add(hyperedge)
+
+            unique_hyperedges = list(hyperedges)
+            H = torch.zeros((self.nnodes, len(unique_hyperedges)), device=device)
+
+            for idx, hyperedge in enumerate(unique_hyperedges):
+                # Assign the closest node as head (1) and others as tail (-1)
+                nodes = list(hyperedge)
+                closest_node = nodes[0]  # Assuming the first node is the closest
+                H[closest_node, idx] = 1
+                for node in nodes[1:]:
+                    H[node, idx] = -1
+
+        # Convert to bfloat16 if needed
+        H = H.to(torch.bfloat16)
+
+        return H
+    
+
+
 #---------------------------------------------------------------------------
 #%% Constructing Hypergraph
 #---------------------------------------------------------------------------
@@ -227,12 +302,6 @@ class hgypergraph_constructor(nn.Module):
         # node_features = node_features.to(torch.bfloat16)
         # print(type(idx))
         transformed_features = torch.tanh(self.alpha * self.lin1(node_features))
-
-
-
-
-
-
 
         # Generate hyperedges using a clustering algorithm or any other method
 
