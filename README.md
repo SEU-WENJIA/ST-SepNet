@@ -138,10 +138,10 @@ sh ./scripts/PEMS/BERT_PEMS03_flexible_order.sh
 ### 3.4 STH-SepNet-Fusion Mechanism between Spatio and Temporal Features
 The fusion mechanism can be specified using the `--fusion_gate` argument. The available options are:
 
-- adaptive: Dynamically adjusts the weight of time and spatial features.
-- attentiongate: Considers the internal relationship between the two features.
-- lstmgate: Captures the dependence of space on temporal features.
-- hyperstgnn: Fully integrated adaptive hypergraph spatio-temporal prediction (without LLMs).
+- `adaptive`: Dynamically adjusts the weight of time and spatial features.
+- `attentiongate`: Considers the internal relationship between the two features.
+- `lstmgate`: Captures the dependence of space on temporal features.
+- `hyperstgnn`: Fully integrated adaptive hypergraph spatio-temporal prediction (without LLMs).
 
 ## 4. Performance and Visualization
 
