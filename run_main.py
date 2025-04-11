@@ -10,7 +10,7 @@ import gc
 gc.collect()
 torch.cuda.empty_cache()
 
-from models import Autoformer, DLinear, TimeLLM, ST_SepNet, baselines32, TimeLLM_maxmin,TimeLLM_navie
+from models import Autoformer, DLinear, TimeLLM, ST_SepNet, baselines32
 
 from data_provider.data_factory import data_provider
 import time
@@ -45,8 +45,8 @@ parser.add_argument('--seed', type=int, default=2021, help='random seed')
 
 # data loader
 parser.add_argument('--data', type=str, required=False, default='outflow', help='dataset type')
-parser.add_argument('--root_path', type=str, default='dataset/Bike', help='root path of the data file')
-parser.add_argument('--data_path', type=str, default='outflow.csv', help='data file')
+parser.add_argument('--root_path', type=str, default='STH-SepNet/dataset/WT', help='root path of the data file')
+parser.add_argument('--data_path', type=str, default='wt.csv', help='data file')
 parser.add_argument('--adjacency_path', type=str, default='adj.csv', help='data file')
 
 # dataloader: datetime to the data split
@@ -72,9 +72,9 @@ parser.add_argument('--seasonal_patterns', type=str, default='Monthly', help='su
 
 
 # model define
-parser.add_argument('--enc_in', type=int, default=295, help='encoder input size') #default 7
-parser.add_argument('--dec_in', type=int, default=295, help='decoder input size') #default 7
-parser.add_argument('--c_out', type=int, default=295, help='output size')   #default 7
+parser.add_argument('--enc_in', type=int, default=69, help='encoder input size') #default 7
+parser.add_argument('--dec_in', type=int, default=69, help='decoder input size') #default 7
+parser.add_argument('--c_out', type=int, default=69, help='output size')   #default 7
 parser.add_argument('--d_model', type=int, default=16, help='dimension of model')  
 parser.add_argument('--n_heads', type=int, default=8, help='num of heads')
 parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')
@@ -90,14 +90,19 @@ parser.add_argument('--embed', type=str, default='learned',
 parser.add_argument('--activation', type=str, default='gelu', help='activation')
 parser.add_argument('--output_attention', action='store_true', help='whether to output attention in encoder')
 parser.add_argument('--patch_len', type=int, default=16, help='patch length')
-parser.add_argument('--stride', type=int, default=8, help='stride')
+parser.add_argument('--stride', type=int, default=8, help='stride') 
 parser.add_argument('--prompt_domain', type=int, default=0, help='')
-parser.add_argument('--llm_model', type=str, default='deepseek2b', help='LLM model')  # LLAMA, GPT2, BERT
-parser.add_argument('--llm_dim', type=int, default='1536', help='LLM model dimension') # LLama7b:4096; GPT2-small:768; BERT-base:768
-parser.add_argument('--node_num', type=int, default=295, help = 'the node number of the network ')  # Bike 295 PV 69 WT  66   DIDI 166
-parser.add_argument('--fusion_gate', type=str, default='hyperstgnn', help='style of module fusion')
-# optimization
+parser.add_argument('--llm_model', type=str, default='BERT', help='LLM model')  # LLAMA, GPT2, BERT
+parser.add_argument('--llm_dim', type=int, default='768', help='LLM model dimension') # LLama7b:4096; GPT2-small:768; BERT-base:768
+parser.add_argument('--node_num', type=int, default=66, help = 'the node number of the network ')  # Bike 295 PV 69 WT  66   DIDI 166
+parser.add_argument('--fusion_gate', type=str, default='adaptive', 
+                    help='style of module fusion, ' \
+                    'adaptive: dynamically adjusts the weight of time and spatial features;' \
+                    'attentiongate: considers the internal relationship between the two features' \
+                    'lstmgate:captures the dependence of space on temporal features' \
+                    'hyperstgnn:fully integrated adaptive hypergraph spatio-temporal prediction(without LLMs)')
 
+# optimization
 parser.add_argument('--num_workers', type=int, default=1, help='data loader num workers')
 parser.add_argument('--itr', type=int, default=1, help='experiments times')
 parser.add_argument('--train_epochs', type=int, default=50, help='train epochs')
@@ -110,7 +115,6 @@ parser.add_argument('--eval_batch_size', type=int, default=16, help='batch size 
 parser.add_argument('--patience', type=int, default=10, help='early stopping patience')
 
 
-
 parser.add_argument('--learning_rate', type=float, default=0.00005, help='optimizer learning rate')
 parser.add_argument('--des', type=str, default='test', help='exp description')
 parser.add_argument('--loss', type=str, default='MSE', help='loss function')
@@ -119,21 +123,25 @@ parser.add_argument('--pct_start', type=float, default=0.2, help='pct_start')
 parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=False)
 parser.add_argument('--llm_layers', type=int, default=6)
 parser.add_argument('--percent', type=int, default=100)
+ 
 
-
-parser.add_argument('--gcn_true',type=bool, default=False, help='Whether to use GCN module')
-parser.add_argument('--hgcn_true',type=bool, default=True,  help='Whether to use HGCN module')
-parser.add_argument('--hgat_true', type=bool, default=True, help='Whether to use HGAT module')
+parser.add_argument('--static',type=bool, default=False, help='Whether to use static adjacency matrix module')
+parser.add_argument('--gcn_true',type=bool, default=True, help='Whether to use GCN module')
+parser.add_argument('--adaptive_hyperhgnn', type=str, default='hgat', help='Hypergraph nearon network: hgcn,hgat,hsage')
+parser.add_argument('--hgcn_true',type=bool, default=False,  help='Whether to use HGCN module')
+parser.add_argument('--hgat_true',type=bool, default=True,  help='Whether to use HGAT module')
+parser.add_argument('--temporl_true', type=bool, default=True, help='Whether to use Temporal convolutional networks Module')
 parser.add_argument('--scale_hyperedges', type=int, default=3)
 parser.add_argument('--alpha', type=float, default=0.1, help = 'use adjustable parameter to control hyperSTLLM or STLLM')
 parser.add_argument('--beta', type=float, default=0.2, help = 'use adjustable parameter to control hyperSTLLM or STLLM')
 parser.add_argument('--gamma', type=float, default=0.5, help = 'use adjustable parameter to control hyperSTLLM or STLLM')
+parser.add_argument('--theta', type=float, default=0.2, help = 'use adjustable parameter to control hyperSTLLM or STLLM')
 
 
 
 args = parser.parse_args()
 ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
-deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='/ds_config_zero2.json')
+deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='STH-SepNet/ds_config_zero2.json')
 accelerator = Accelerator(kwargs_handlers=[ddp_kwargs], deepspeed_plugin=deepspeed_plugin)
 
 for ii in range(args.itr):
@@ -172,13 +180,11 @@ for ii in range(args.itr):
     elif args.model == 'DLinear':
         model = DLinear.Model(args).float()
     elif args.model == 'pool':
-        model = ST_SepNet.Model(args).float()
-    elif args.model == 'maxmin':
-        model = TimeLLM_maxmin.Model(args).float()    
-    elif args.model in baselines_models:
+        model = ST_SepNet.Model(args).float() 
+    elif args.model in baselines_models:  
         model = baselines32.Model(args).float()    
-    else:
-        model = TimeLLM_navie.Model(args).float()
+    elif args.model == 'TimeLLM':
+        model = TimeLLM.Model(args).float()
         
 
     path = os.path.join(args.checkpoints,
