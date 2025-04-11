@@ -23,32 +23,10 @@ class AdaptiveGate(nn.Module):
         return fused_output
     
 
-class LSTMGate(nn.Module):
-    def __init__(self, input_size, hidden_size):
-        super(LSTMGate, self).__init__()
-        self.lstm = nn.LSTM(input_size*2, hidden_size, batch_first=True)
 
-    def forward(self, x, h):
-        # x: (B, T, N)
-        # h: (B, T, N)
-        B, T, N = x.size()
-
-        h = h.view(B, T, N).transpose(0, 1).contiguous()  # (T, B, N)
-        h0 = h[-1].unsqueeze(0) # Use the last time step as the initial hidden state (1, B, N)
-        c0 = torch.zeros_like(h0) # Initialize the cell state to zero (1, B, N)
-
-
-        output, (h_n, c_n) = self.lstm(x, (h0, c0))
-
-        output = output.view(B, T, N)  #Make sure the output shape is (B, T, N)
-
-        return output
-    
-
-
-class AttentionGate(nn.Module):
+class AttentionFusion(nn.Module):
     def __init__(self, input_size):
-        super(AttentionGate, self).__init__()
+        super(AttentionFusion, self).__init__()
         self.query = nn.Linear(input_size, input_size)
         self.key = nn.Linear(input_size, input_size)
         self.value = nn.Linear(input_size, input_size)
@@ -61,8 +39,37 @@ class AttentionGate(nn.Module):
         key = self.key(sthgnn_enc)  # (B, N, F)
         value = self.value(sthgnn_enc)  # (B, N, F)
 
+        # Calculate attention scores
         scores = torch.bmm(query, key.transpose(1, 2)) / (query.size(-1) ** 0.5)  # (B, N, N)
         attention_weights = self.softmax(scores)  # (B, N, N)
+
+        # Apply attention weights
         attended_sthgnn_enc = torch.bmm(attention_weights, value)  # (B, N, F)
 
-        return attended_sthgnn_enc
+        # Fuse the two features
+        fused_output = dec_out + attended_sthgnn_enc  # (B, N, F)
+
+        return fused_output
+    
+
+class LSTMGate(nn.Module):
+    def __init__(self, input_size):
+        super(LSTMGate, self).__init__()
+        self.lstm = nn.LSTM(input_size, input_size, batch_first=True)
+
+    def forward(self, x, h):
+        # x: (B, T, N)
+        # h: (B, T, N)
+        B, T, N = x.size()
+
+        h = h.view(B, T, N).transpose(0, 1).contiguous()  # (T, B, N)
+        h0 = h[-1].unsqueeze(0)  # Use the last time step as the initial hidden state (1, B, N)
+        c0 = torch.zeros_like(h0)  # Initialize the cell state to zero (1, B, N)
+
+        output, (h_n, c_n) = self.lstm(x, (h0, c0))
+
+        fused_output = output.view(B, T, N)  # Make sure the output shape is (B, T, N)
+
+        return fused_output
+    
+
