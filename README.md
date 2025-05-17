@@ -172,7 +172,7 @@ The fusion mechanism can be specified using the `--fusion_gate` argument. The av
 
 ## Citation
 
-If you find this repository helpful for predicting high-yield AAV variants, please cite our paper. 
+If you find this repository helpful for your research, please cite our paper. 
 
 ```
 @inproceedings{chen2025decoupling,
