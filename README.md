@@ -169,7 +169,25 @@ The fusion mechanism can be specified using the `--fusion_gate` argument. The av
 </p>
 
 
-## 5.Further Reading 
+
+## Citation
+
+If you find this repository helpful for predicting high-yield AAV variants, please cite our paper. 
+
+```
+@inproceedings{chen2025decoupling,
+  title={Decoupling Spatio-Temporal Prediction: When Lightweight Large Models Meet Adaptive Hypergraphs},
+  author={Chen, Jiawen and Shao, Qi and Chen, Duxin and Yu, Wwenwu},
+  booktitle={Proceedings of the ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD)},
+  year={2025},
+  month={August 3rd-7th},
+  address={Toronto, Canada},
+  publisher={ACM}
+}
+
+```
+
+## Further Reading 
 ### Our research baselines models refer to the following works and their repository code.
 
 
